@@ -18,9 +18,18 @@ public class KafkaProcessor {
         final StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
         // Kafka properties
+       //// Properties properties = new Properties();
+        ////properties.setProperty("bootstrap.servers", "localhost:9092");
+        ////properties.setProperty("group.id", "flink-consumer-group");
         Properties properties = new Properties();
-        properties.setProperty("bootstrap.servers", "localhost:9092");
-        properties.setProperty("group.id", "flink-consumer-group");
+        try (InputStream input = KafkaProcessor.class.getClassLoader().getResourceAsStream("config.properties")) {
+            if (input == null) {
+                System.err.println("Sorry, unable to find config.properties");
+                return;
+            }
+            properties.load(input);
+        }
+
 
         // Kafka Consumer
         FlinkKafkaConsumer<String> consumer = new FlinkKafkaConsumer<>("INPUT_TOPIC", new SimpleStringSchema(), properties);
